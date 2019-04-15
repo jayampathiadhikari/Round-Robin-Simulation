@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Round Robin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" type="text/css"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="round robin.js"></script>
+    <script src="jquery.timespace.js"></script>
+    <link href="css/jquery.timespace.light.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <h2 style="margin-left:1.5%;margin-top:1%;"><b>Round Robin Simulator</b></h2>
+    <div class="container-fluid">
+        <div class="row">
+            <div class=col-3 style="margin-left: 2%;
+                margin-top: 2%; border-style: solid;padding: 1%">
+                <div class="row">
+                    <div class="col-5">
+                        Time_Quantum
+                        <input class="form-control" type="number" id="time_quantum" min=1  />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Process_No</th>
+                                    <th>Burst_Time</th>
+                                    <th>Arrival_Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody">
+                                <tr id="trow1">
+                                    <th scope="row">1</th>
+                                    <td><input class="form-control" type="number" id="burst1" min=1 /></td>
+                                    <td><input class="form-control" type="number" id="arrival1" min=0  /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <button type="button" id="buttonAdd" class="btn btn-warning">ADD</button>
+                    <button type="button" id="buttonRem" class="btn btn-danger">REMOVE</button>
+                    <button type="button" id="buttonSub" class="btn btn-info" onclick="unhideFunction()">SUBMIT</button>
+                </div>
+            </div>
+
+            <div class="col" name="hiddenEl" style="display: none; margin-left: 2%;
+                margin-top: 2%; margin-right: 2%; border-style: solid;padding: 1%;background-color: gray; padding: 10%;">
+                <div id="details">
+                    <h3 id="process_details" style="text-align: center;"></h3>
+                </div>
+            </div>
+            <!-- <div class="col-3" title="hiddenEl" name="hiddenEl" style="display: none;
+                margin-top: 2%; margin-right: 2%; border-style: solid;padding: 1%;background-color: gray">
+                <div class=container-button>
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button type="button" id="backwardBtn" class="btn btn-danger">Backward<<</button> <button
+                                type="button" id="forwardBtn" class="btn btn-warning">Forward>></button>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+
+        
+    </div>
+    <div id="timeline"></div>
+    
+
+
+</body>
+
+</html>
