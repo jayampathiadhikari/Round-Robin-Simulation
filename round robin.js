@@ -4,6 +4,8 @@ var time = 0;
 var done = false;
 var elemntid = 2;
 var endTime = 27;
+var turn_time =0;
+var no_process =0;
 
 class process {
     constructor(burst_time, arrival_time) {
@@ -32,11 +34,9 @@ class process {
 }
 
 async function execute(){
-    console.log(time_quantum);
+    
     while(!(processList.length==0 && readyQueue.length==0)){
         //sleep for 1s
-        //await sleep(1000);
-        //console.log('Two seconds later');
         if(readyQueue.length!=0){
             pro = readyQueue.shift();
             count=0;
@@ -44,18 +44,24 @@ async function execute(){
                 await sleep(1500);
                 pro.execute_once();
                 $("div.jqTimespaceColumn:nth-child("+(time+1)+")").css("background",pro.colour).append("<p>Process "+pro.Id+"</p>");
-                $("#process_details").html("Executing Process "+pro.Id+"");
+                $("#process_details").html("Executing Process "+pro.Id+" ");
                 // console.log("time "+ time);
                 // console.log(pro.Id);
+                //moving the gnatt chart
                 if(time>=9 && (time-9)%4==0){
                     $("div[title|='Move Right']").trigger("click");
                 }
                 count++;
                 time++;
-                addToReadyQueue();
+                addToReadyQueue();//checks for new arrivals
             }
             if(pro.remainingTime!=0){
+                //if the process is not completed append to readyQueue
                 readyQueue.push(pro);
+            }
+            else{
+                //if process is completed 
+                turn_time += (time-pro.arrivalTime);
             }
         }
         else{
@@ -72,7 +78,8 @@ async function execute(){
             addToReadyQueue();
         }
     }
-    $("#process_details").html("Finished");
+    $("#process_details").html("Average Turn Around Time : " + turn_time/no_process);
+    
 }
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -136,6 +143,17 @@ $(document).ready(function(){
         $('#trow'+elemntid).remove();    
     });
     $("#buttonSub").click(function(){
+        //onlick of submit button
+        if($('#timeline').has()){
+            $('#timeline').empty();
+            id=0;
+            time=0;
+            processList =[];
+            readyQueue =[];
+            done = false;
+            turn_time =0;
+            no_process =0;
+        }
         
         $('#timeline').timespace({
 
@@ -156,17 +174,17 @@ $(document).ready(function(){
               },
           
           });
+
+
           var c = $("#tbody").children().length;
           for (i = 1; i <= c; i++) {
                 var burst=parseInt($("#burst"+i.toString()).val()) ;
                 var arr = parseInt($("#arrival"+i.toString()).val()) ;
                 processList.push(new process(burst, arr));
-          } 
+          }
+          no_process= processList.length;
           addToReadyQueue();
-          execute();
-          console.log("funis");
-          
-        
+          execute();    
     });
 
     $("#forwardBtn").click(function(){
