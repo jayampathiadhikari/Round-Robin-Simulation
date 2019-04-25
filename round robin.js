@@ -3,9 +3,10 @@ var time_quantum ;
 var time = 0;
 var done = false;
 var elemntid = 2;
-var endTime = 27;
-var turn_time =0;
+var endTime = 50;
+var tot_turn_time =0;
 var no_process =0;
+var tot_waiting_time=0;
 
 class process {
     constructor(burst_time, arrival_time) {
@@ -44,9 +45,14 @@ async function execute(){
                 await sleep(1500);
                 pro.execute_once();
                 $("div.jqTimespaceColumn:nth-child("+(time+1)+")").css("background",pro.colour).append("<p>Process "+pro.Id+"</p>");
+                //add the code to represent ready queue...
+                var readyQ = [];
+                readyQueue.forEach(element => {
+                    readyQ.push(element.Id);
+                });
+                $("#process_details3").html("Ready Queue : "+ JSON.stringify(readyQ));
+                //
                 $("#process_details").html("Executing Process "+pro.Id+" ");
-                // console.log("time "+ time);
-                // console.log(pro.Id);
                 //moving the gnatt chart
                 if(time>=9 && (time-9)%4==0){
                     $("div[title|='Move Right']").trigger("click");
@@ -54,32 +60,43 @@ async function execute(){
                 count++;
                 time++;
                 addToReadyQueue();//checks for new arrivals
+                //add the code to represent ready queue...
+                var readyQ = [];
+                readyQueue.forEach(element => {
+                    readyQ.push(element.Id);
+                });
+                $("#process_details3").html("Ready Queue : "+ JSON.stringify(readyQ));
+                //
             }
             if(pro.remainingTime!=0){
                 //if the process is not completed append to readyQueue
                 readyQueue.push(pro);
+                
             }
             else{
-                //if process is completed 
-                turn_time += (time-pro.arrivalTime);
+                //if process is completed
+                var turn_time =  (time-pro.arrivalTime);
+                var waiting_time = (turn_time-pro.burstTime);
+                tot_turn_time += turn_time ;
+                tot_waiting_time += (waiting_time);
+                
             }
         }
         else{
-            // console.log("time "+time);
-            // console.log("waiting for process");
             await sleep(1500);
             $("div.jqTimespaceColumn:nth-child("+(time+1)+")").append("<p>waiting</p>");
             $("#process_details").html("Waiting for process");
-            if(time>=9 && (time-9)%4==0){
-                    
+            if(time>=9 && (time-9)%4==0){  
                 $("div[title|='Move Right']").trigger("click");
             }
             time++;
             addToReadyQueue();
+            
         }
     }
-    $("#process_details").html("Average Turn Around Time : " + turn_time/no_process);
-    
+    await sleep(1000);
+    $("#process_details").html("Average Turn Around Time : " + tot_turn_time/no_process);
+    $("#process_details2").html("Average Waiting Time : "+ tot_waiting_time/no_process );
 }
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -111,18 +128,11 @@ function removeA(arr) {
     return arr;
 }
 
-// process1 = new process(3, 0);
-// process2 = new process(4, 0);
-// process3 = new process(4, 15);
-// process4 = new process(5, 0);
+
 
 var processList = new Array();
 var readyQueue = new Array();
 //initiatte process list
-// processList.push(process1);
-// processList.push(process2);
-// processList.push(process3);
-// processList.push(process4);
 //initiating readyQueue.
 
 function createEle(){
@@ -146,13 +156,16 @@ $(document).ready(function(){
         //onlick of submit button
         if($('#timeline').has()){
             $('#timeline').empty();
+            $('#process_details2').html("");
             id=0;
             time=0;
             processList =[];
             readyQueue =[];
             done = false;
-            turn_time =0;
+            tot_turn_time =0;
+            tot_waiting_time =0;
             no_process =0;
+
         }
         
         $('#timeline').timespace({
@@ -201,12 +214,3 @@ function unhideFunction() {
     });
     
 };
-
-
-
-  
-  
-
-
-
-
