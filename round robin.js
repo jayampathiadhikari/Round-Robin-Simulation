@@ -138,10 +138,16 @@ var readyQueue = new Array();
 function createEle(){
     var t = $('<tr id="trow'+elemntid+'"><th scope="row">'+ elemntid +'</th><td><input class="form-control" type="number" min=0 id="burst'+elemntid+'" /></td><td><input class="form-control" type="number" min=0 id="arrival'+elemntid+'" /></td></tr>');    
     return t;
-}
-
+};
 $(document).ready(function(){
-    time_quantum =parseInt($("#time_quantum").val()) ;
+
+
+
+
+
+
+    ////
+    
     
     $('#buttonAdd').click(function() {
         $("#tbody").append(createEle());
@@ -153,8 +159,11 @@ $(document).ready(function(){
         $('#trow'+elemntid).remove();    
     });
     $("#buttonSub").click(function(){
+        time_quantum =parseInt($("#time_quantum").val()) ;
+        console.log('clicked');
         //onlick of submit button
         if($('#timeline').has()){
+            debugger;
             $('#timeline').empty();
             $('#process_details2').html("");
             id=0;
@@ -203,9 +212,11 @@ $(document).ready(function(){
     $("#forwardBtn").click(function(){
         $("div.jqTimespaceColumn:nth-child("+3+")").css("background", "coral").append("<p>Test</p>");    
     });
-    
-});
+/////////    
 
+
+
+});
 function unhideFunction() {
     var divelement = document.getElementsByName("hiddenEl");
     divelement.forEach(element => {
