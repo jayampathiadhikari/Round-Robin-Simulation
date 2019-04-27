@@ -1,12 +1,12 @@
 var id = 0;
-var time_quantum ;
+var time_quantum;
 var time = 0;
 var done = false;
 var elemntid = 2;
-var endTime = 50;
-var tot_turn_time =0;
-var no_process =0;
-var tot_waiting_time=0;
+var endTime = 100;
+var tot_turn_time = 0;
+var no_process = 0;
+var tot_waiting_time = 0;
 
 class process {
     constructor(burst_time, arrival_time) {
@@ -14,7 +14,7 @@ class process {
         this.arrival_time = arrival_time;
         this.burst_time = burst_time;
         this.remaining_time = burst_time;
-        this.colour = '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
+        this.colour = '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6);
         id += 1;
     }
     get Id() {
@@ -34,83 +34,81 @@ class process {
     }
 }
 
-async function execute(){
-    
-    while(!(processList.length==0 && readyQueue.length==0)){
+async function execute() {
+
+    while (!(processList.length == 0 && readyQueue.length == 0)) {
         //sleep for 1s
-        if(readyQueue.length!=0){
+        if (readyQueue.length != 0) {
             pro = readyQueue.shift();
-            count=0;
-            while(count<time_quantum && pro.remainingTime>0){
+            count = 0;
+            while (count < time_quantum && pro.remainingTime > 0) {
                 await sleep(1500);
                 pro.execute_once();
-                $("div.jqTimespaceColumn:nth-child("+(time+1)+")").css("background",pro.colour).append("<p>Process "+pro.Id+"</p>");
+                $("div.jqTimespaceColumn:nth-child(" + (time + 1) + ")").css("background", pro.colour).append("<p>Process " + pro.Id + "</p>");
                 //add the code to represent ready queue...
                 var readyQ = [];
                 readyQueue.forEach(element => {
                     readyQ.push(element.Id);
                 });
-                $("#process_details3").html("Ready Queue : "+ JSON.stringify(readyQ));
+                $("#process_details3").html("Ready Queue : " + JSON.stringify(readyQ));
                 //
-                $("#process_details").html("Executing Process "+pro.Id+" ");
+                $("#process_details").html("Executing Process " + pro.Id + " ");
                 //moving the gnatt chart
-                if(time>=9 && (time-9)%4==0){
+                if (time >= 9 && (time - 9) % 4 == 0) {
                     $("div[title|='Move Right']").trigger("click");
                 }
                 count++;
                 time++;
-                addToReadyQueue();//checks for new arrivals
+                addToReadyQueue(); //checks for new arrivals
                 //add the code to represent ready queue...
                 var readyQ = [];
                 readyQueue.forEach(element => {
                     readyQ.push(element.Id);
                 });
-                $("#process_details3").html("Ready Queue : "+ JSON.stringify(readyQ));
+                $("#process_details3").html("Ready Queue : " + JSON.stringify(readyQ));
                 //
             }
-            if(pro.remainingTime!=0){
+            if (pro.remainingTime != 0) {
                 //if the process is not completed append to readyQueue
                 readyQueue.push(pro);
-                
-            }
-            else{
+
+            } else {
                 //if process is completed
-                var turn_time =  (time-pro.arrivalTime);
-                var waiting_time = (turn_time-pro.burstTime);
-                tot_turn_time += turn_time ;
+                var turn_time = (time - pro.arrivalTime);
+                var waiting_time = (turn_time - pro.burstTime);
+                tot_turn_time += turn_time;
                 tot_waiting_time += (waiting_time);
-                
+
             }
-        }
-        else{
+        } else {
             await sleep(1500);
-            $("div.jqTimespaceColumn:nth-child("+(time+1)+")").append("<p>waiting</p>");
+            $("div.jqTimespaceColumn:nth-child(" + (time + 1) + ")").append("<p>waiting</p>");
             $("#process_details").html("Waiting for process");
-            if(time>=9 && (time-9)%4==0){  
+            if (time >= 9 && (time - 9) % 4 == 0) {
                 $("div[title|='Move Right']").trigger("click");
             }
             time++;
             addToReadyQueue();
-            
+
         }
     }
     await sleep(1000);
-    $("#process_details").html("Average Turn Around Time : " + tot_turn_time/no_process);
-    $("#process_details2").html("Average Waiting Time : "+ tot_waiting_time/no_process );
+    $("#process_details").html("Average Turn Around Time : " + tot_turn_time / no_process);
+    $("#process_details2").html("Average Waiting Time : " + tot_waiting_time / no_process);
 }
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
-  }
+}
 
-function addToReadyQueue(){
-    var i=0;
-    while(i< processList.length){
-        if(processList[i].arrivalTime==time){
+function addToReadyQueue() {
+    var i = 0;
+    while (i < processList.length) {
+        if (processList[i].arrivalTime == time) {
             readyQueue.push(processList[i]);
-            processList.splice(i,1);
-        }
-        else{
-            i++;   
+            processList.splice(i, 1);
+        } else {
+            i++;
         }
     }
 }
@@ -135,93 +133,107 @@ var readyQueue = new Array();
 //initiatte process list
 //initiating readyQueue.
 
-function createEle(){
-    var t = $('<tr id="trow'+elemntid+'"><th scope="row">'+ elemntid +'</th><td><input class="form-control" type="number" min=0 id="burst'+elemntid+'" /></td><td><input class="form-control" type="number" min=0 id="arrival'+elemntid+'" /></td></tr>');    
+function createEle() {
+    var t = $('<tr id="trow' + elemntid + '"><th scope="row">' + elemntid + '</th><td><input class="form-control" type="number" min=0 id="burst' + elemntid + '" /></td><td><input class="form-control" type="number" min=0 id="arrival' + elemntid + '" /></td></tr>');
     return t;
 };
-$(document).ready(function(){
+$(document).ready(function () {
 
-
-
-
-
-
-    ////
-    
-    
-    $('#buttonAdd').click(function() {
+    $('#buttonAdd').click(function () {
         $("#tbody").append(createEle());
-        elemntid++;        
+        elemntid++;
     });
-    $("#buttonRem").click(function(){
-        if(elemntid>1){
-            elemntid-=1;}
-        $('#trow'+elemntid).remove();    
+    $("#buttonRem").click(function () {
+        if (elemntid > 1) {
+            elemntid -= 1;
+        }
+        $('#trow' + elemntid).remove();
     });
-    $("#buttonSub").click(function(){
-        time_quantum =parseInt($("#time_quantum").val()) ;
-        console.log('clicked');
+    $("#buttonSub").click(function () {
+        
+        
         //onlick of submit button
-        if($('#timeline').has()){
-            debugger;
+        if ($('#timeline').has()) {
+
             $('#timeline').empty();
             $('#process_details2').html("");
-            id=0;
-            time=0;
-            processList =[];
-            readyQueue =[];
+            id = 0;
+            time = 0;
+            processList = [];
+            readyQueue = [];
             done = false;
-            tot_turn_time =0;
-            tot_waiting_time =0;
-            no_process =0;
+            tot_turn_time = 0;
+            tot_waiting_time = 0;
+            no_process = 0;
 
         }
-        
+
         $('#timeline').timespace({
 
             // 24-hour timeline
             data: {
-              
-                events: [
-                    {
-                        start: 6.50, 
-                        title: '', 
+
+                events: [{
+                        start: 6.50,
+                        title: '',
                         description: 'Eat a healthy breakfast.',
-                        
-                      },
-                      {start: 8, end: 10, title: 'Walk', description: 'Go for a walk.'},
-                      {start: 14, title: 'Lunch', description: 'Eat a healthy lunch.'},
-                      {start: 14.75, title: 'Meeting', description: 'Meeting with Co-workers.'},
+
+                    },
+                    {
+                        start: 8,
+                        end: 10,
+                        title: 'Walk',
+                        description: 'Go for a walk.'
+                    },
+                    {
+                        start: 14,
+                        title: 'Lunch',
+                        description: 'Eat a healthy lunch.'
+                    },
+                    {
+                        start: 14.75,
+                        title: 'Meeting',
+                        description: 'Meeting with Co-workers.'
+                    },
                 ]
-              },
-          
-          });
+            },
 
+        });
+        time_quantum = parseInt($("#time_quantum").val());
+        if(isNaN(time_quantum)){
+            alert("Please give a value to time quantum");
+            throw new Error("no value to time quantum"); 
+        }
 
-          var c = $("#tbody").children().length;
-          for (i = 1; i <= c; i++) {
-                var burst=parseInt($("#burst"+i.toString()).val()) ;
-                var arr = parseInt($("#arrival"+i.toString()).val()) ;
-                processList.push(new process(burst, arr));
-          }
-          no_process= processList.length;
-          addToReadyQueue();
-          execute();    
+        var c = $("#tbody").children().length;
+        for (i = 1; i <= c; i++) {
+            var burst = parseInt($("#burst" + i.toString()).val());
+            var arr = parseInt($("#arrival" + i.toString()).val());
+            if(isNaN(burst)|| isNaN(arr)){
+                alert("Please give values to burst and arrival times");
+                throw new Error("no burst and arrival times");    
+            }
+            
+            processList.push(new process(burst, arr));
+        }
+        unhideFunction();
+        
+        no_process = processList.length;
+        addToReadyQueue();
+        execute();
     });
 
-    $("#forwardBtn").click(function(){
-        $("div.jqTimespaceColumn:nth-child("+3+")").css("background", "coral").append("<p>Test</p>");    
+    $("#forwardBtn").click(function () {
+        $("div.jqTimespaceColumn:nth-child(" + 3 + ")").css("background", "coral").append("<p>Test</p>");
     });
-/////////    
-
-
-
+     
 });
+
 function unhideFunction() {
     var divelement = document.getElementsByName("hiddenEl");
     divelement.forEach(element => {
         if (element.style.display == 'none')
-        element.style.display = 'block';
+            element.style.display = 'block';
     });
-    
+
 };
