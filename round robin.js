@@ -37,7 +37,7 @@ class process {
 async function execute() {
 
     while (!(processList.length == 0 && readyQueue.length == 0)) {
-        
+        //sleep for 1s
         if (readyQueue.length != 0) {
             pro = readyQueue.shift();
             count = 0;
@@ -45,12 +45,13 @@ async function execute() {
                 await sleep(1500);
                 pro.execute_once();
                 $("div.jqTimespaceColumn:nth-child(" + (time + 1) + ")").css("background", pro.colour).append("<p>Process " + pro.Id + "</p>");
-                
+                //add the code to represent ready queue...
                 var readyQ = [];
                 readyQueue.forEach(element => {
                     readyQ.push(element.Id);
                 });
                 $("#process_details3").html("Ready Queue : " + JSON.stringify(readyQ));
+                //
                 $("#process_details").html("Executing Process " + pro.Id + " ");
                 //moving the gnatt chart
                 if (time >= 9 && (time - 9) % 4 == 0) {
@@ -58,9 +59,8 @@ async function execute() {
                 }
                 count++;
                 time++;
-                //checks for new arrivals
-                addToReadyQueue(); 
-                
+                addToReadyQueue(); //checks for new arrivals
+                //add the code to represent ready queue...
                 var readyQ = [];
                 readyQueue.forEach(element => {
                     readyQ.push(element.Id);
@@ -113,19 +113,30 @@ function addToReadyQueue() {
     }
 }
 
-function createEle() {
-    var t = $('<tr id="trow' + elemntid + '"><th scope="row">' + elemntid + '</th><td><input class="form-control" id="burst' + elemntid + 'type="number" " /></td><td><input class="form-control" type="number" min=0 id="arrival' + elemntid + '" /></td></tr>');
-    return t;
+function removeA(arr) {
+    var what, a = arguments,
+        L = a.length,
+        ax;
+    while (L > 1 && arr.length) {
+        what = a[--L];
+        while ((ax = arr.indexOf(what)) !== -1) {
+            arr.splice(ax, 1);
+        }
+    }
+    return arr;
 }
 
-//initiatte process list
-//initiating readyQueue.
+
 
 var processList = new Array();
 var readyQueue = new Array();
+//initiatte process list
+//initiating readyQueue.
 
-
-
+function createEle() {
+    var t = $('<tr id="trow' + elemntid + '"><th scope="row">' + elemntid + '</th><td><input class="form-control" type="number" min=0 id="burst' + elemntid + '" /></td><td><input class="form-control" type="number" min=0 id="arrival' + elemntid + '" /></td></tr>');
+    return t;
+};
 $(document).ready(function () {
 
     $('#buttonAdd').click(function () {
@@ -139,12 +150,58 @@ $(document).ready(function () {
         $('#trow' + elemntid).remove();
     });
     $("#buttonSub").click(function () {
-                
+        
+        
         //onlick of submit button
-        time_quantum = parseInt($("#time_quantum").val());
+        if ($('#timeline').has()) {
 
-        if(isNaN(time_quantum) ){
-            alert("Please give a value to time quantum greater than 1");
+            $('#timeline').empty();
+            $('#process_details2').html("");
+            id = 0;
+            time = 0;
+            processList = [];
+            readyQueue = [];
+            done = false;
+            tot_turn_time = 0;
+            tot_waiting_time = 0;
+            no_process = 0;
+
+        }
+
+        $('#timeline').timespace({
+
+            // 24-hour timeline
+            data: {
+
+                events: [{
+                        start: 6.50,
+                        title: '',
+                        description: 'Eat a healthy breakfast.',
+
+                    },
+                    {
+                        start: 8,
+                        end: 10,
+                        title: 'Walk',
+                        description: 'Go for a walk.'
+                    },
+                    {
+                        start: 14,
+                        title: 'Lunch',
+                        description: 'Eat a healthy lunch.'
+                    },
+                    {
+                        start: 14.75,
+                        title: 'Meeting',
+                        description: 'Meeting with Co-workers.'
+                    },
+                ]
+            },
+
+        });
+        time_quantum = parseInt($("#time_quantum").val());
+        if(isNaN(time_quantum)){
+            alert("Please give a value to time quantum");
             throw new Error("no value to time quantum"); 
         }
 
@@ -159,66 +216,8 @@ $(document).ready(function () {
             
             processList.push(new process(burst, arr));
         }
-        if ($('#timeline').has()) {
-
-            $('#timeline').empty();
-            $('#process_details2').html("");
-            id = 0;
-            time = 0;
-            processList = [];
-            readyQueue = [];
-            done = false;
-            tot_turn_time = 0;
-            tot_waiting_time = 0;
-            no_process = 0;
-
-        };
-        $('#timeline').timespace({
-
-            //timeline
-            data: {
-
-                events: [{
-                        start: 6.50,
-                        title: '',
-                        description:"",// 'Eat a healthy breakfast.',
-
-                    },
-                    {
-                        start: 8,
-                        end: 10,
-                        title: "",//'Walk',
-                        description: "",//'Go for a walk.'
-                    },
-                    {
-                        start: 14,
-                        title: "",//'Lunch',
-                        description: "",//'Eat a healthy lunch.'
-                    },
-                    {
-                        start: 14.75,
-                        title: "",//'Meeting',
-                        description: "",//'Meeting with Co-workers.'
-                    },
-                ]
-            },
-
-        });
-
-        //adding new part
-        // var tot_burst=0;
-        // var max_arrival=0;
-        // processList.forEach(pro => {
-        //     tot_burst+= pro.burstTime;
-        //     if(max_arrival<pro.arrivalTime){
-        //         max_arrival = pro.arrivalTime;
-        //     }
-        // });
-        
-        // endTime = max_arrival+tot_burst;
-        // console.log(endTime);
-
         unhideFunction();
+        
         no_process = processList.length;
         addToReadyQueue();
         execute();
