@@ -113,18 +113,6 @@ function addToReadyQueue() {
     }
 }
 
-function removeA(arr) {
-    var what, a = arguments,
-        L = a.length,
-        ax;
-    while (L > 1 && arr.length) {
-        what = a[--L];
-        while ((ax = arr.indexOf(what)) !== -1) {
-            arr.splice(ax, 1);
-        }
-    }
-    return arr;
-}
 
 
 
@@ -134,7 +122,7 @@ var readyQueue = new Array();
 //initiating readyQueue.
 
 function createEle() {
-    var t = $('<tr id="trow' + elemntid + '"><th scope="row">' + elemntid + '</th><td><input class="form-control" type="number" min=0 id="burst' + elemntid + '" /></td><td><input class="form-control" type="number" min=0 id="arrival' + elemntid + '" /></td></tr>');
+    var t = $('<tr id="trow' + elemntid + '"><th scope="row">' + elemntid + '</th><td><input class="form-control" type="number" min=1 id="burst' + elemntid + '" /></td><td><input class="form-control" type="number" min=0 id="arrival' + elemntid + '" /></td></tr>');
     return t;
 };
 $(document).ready(function () {
@@ -176,24 +164,24 @@ $(document).ready(function () {
                 events: [{
                         start: 6.50,
                         title: '',
-                        description: 'Eat a healthy breakfast.',
+                        description: ' ',
 
                     },
                     {
                         start: 8,
                         end: 10,
-                        title: 'Walk',
-                        description: 'Go for a walk.'
+                        title: ' ',
+                        description: ' '
                     },
                     {
                         start: 14,
-                        title: 'Lunch',
-                        description: 'Eat a healthy lunch.'
+                        title: ' ',
+                        description: ' '
                     },
                     {
                         start: 14.75,
-                        title: 'Meeting',
-                        description: 'Meeting with Co-workers.'
+                        title: ' ',
+                        description: ' '
                     },
                 ]
             },
@@ -204,20 +192,23 @@ $(document).ready(function () {
             alert("Please give a value to time quantum");
             throw new Error("no value to time quantum"); 
         }
+        if(time_quantum<1){
+            alert("Time quantum should be greater than 0");
+            throw new Error("Time quantum should be greater than 0"); 
+        }
 
         var c = $("#tbody").children().length;
         for (i = 1; i <= c; i++) {
             var burst = parseInt($("#burst" + i.toString()).val());
             var arr = parseInt($("#arrival" + i.toString()).val());
-            if(isNaN(burst)|| isNaN(arr)){
-                alert("Please give values to burst and arrival times");
+            if(isNaN(burst)|| isNaN(arr)||(burst<1)|| (arr<0)){
+                alert("Please give values to burst and arrival times. Burst times should be greater than 0 and Arrival times should be greater than or equal to 0");
                 throw new Error("no burst and arrival times");    
             }
             
             processList.push(new process(burst, arr));
         }
         unhideFunction();
-        
         no_process = processList.length;
         addToReadyQueue();
         execute();

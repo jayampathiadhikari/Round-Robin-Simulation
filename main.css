@@ -50,3 +50,12 @@
 .divTableBody {
 	display: table-row-group;
 }
+.heading {
+	font-family: 'Titillium Web', sans-serif;	
+}
+.jqTimespaceColumn{
+	font-family: 'Titillium Web', sans-serif;	
+}
+.col-3{
+	font-family: 'Titillium Web', sans-serif;
+}
